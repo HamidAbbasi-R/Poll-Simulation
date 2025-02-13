@@ -5,7 +5,7 @@ This repository contains a Streamlit-based dashboard that simulates poll results
 ## Overview
 
 The dashboard allows users to simulate a poll by specifying:
-- **True Percentage of 1 Among Population ($P_{true}$)**: The actual proportion of the population with a specific characteristic.
+- **True Percentage of 1 Among Population ($P_{true}$)**: The actual proportion of the population with a specific characteristic. This value is unknown in real-world scenarios.
 - **Max Sample Size**: The maximum number of individuals to sample.
 - **Confidence Level ($CL$)**: The desired confidence level for the confidence interval.
 - **Random Seed**: A seed value for reproducibility of random sampling.
@@ -67,13 +67,13 @@ The dashboard generates three interactive graphs:
 ## Graphs
 
 ### 1. Sample Mean and Confidence Interval
-![Sample Mean]()
+![Sample Mean](imgs/x_bar.png)
 
 ### 2. Confidence Level Probability
-![Confidence Level]()
+![Confidence Level](imgs/CL.png)
 
 ### 3. P-Value Analysis
-![P-Value]()
+![P-Value](imgs/p-value.png)
 
 ## Dependencies
 
@@ -85,7 +85,3 @@ The dashboard generates three interactive graphs:
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any improvements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

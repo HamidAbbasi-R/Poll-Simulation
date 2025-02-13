@@ -10,7 +10,7 @@ with st.sidebar:
     st.write('Parameters')
     P = st.number_input(r'True Percentage of 1 Among Population, $P_{true}$ (%)', value=55.0) / 100
     max_sample_size = st.number_input('Max Sample Size', value=1000)
-    conf = st.number_input(r'Confidence Level, $CL$ (%)', value=99.0) / 100
+    conf = st.number_input(r'Confidence Level, $CL$ (%)', value=95.0) / 100
     seed = st.number_input('Random Seed', value=0)
 
 # generate population

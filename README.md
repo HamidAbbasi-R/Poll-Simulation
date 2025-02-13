@@ -1,6 +1,5 @@
 # Poll Simulation Dashboard
-
-This repository contains a Streamlit-based dashboard that simulates poll results based on user-defined parameters. The simulation demonstrates how sample size affects the accuracy of poll results, confidence intervals, and statistical significance.
+You can access the dashboard [here](https://hamidabbasi-r-poll-simulation-poll-simulation-2dalas.streamlit.app/). This repository contains a Streamlit-based dashboard that simulates poll results based on user-defined parameters. The simulation demonstrates how sample size affects the accuracy of poll results, confidence intervals, and statistical significance.
 
 ## Overview
 

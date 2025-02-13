@@ -36,7 +36,9 @@ x_bar = np.array([np.mean(sample, axis=0) for sample in sample])
 SE = np.array([np.sqrt(x_bar * ( 1 - x_bar ) / sample_size) for x_bar, sample_size in zip(x_bar, sample_size)])
 
 # confidence level
-prob_within_interval = np.array([norm.cdf((1-conf) / SE) - norm.cdf(-(1-conf) / SE) for SE in SE])
+conf_array = np.arange(conf - 0.02, conf + 0.02, 0.01)
+conf_array = conf_array[conf_array<1]
+prob_within_interval = [np.array([norm.cdf((1-conf) / SE) - norm.cdf(-(1-conf) / SE) for SE in SE]) for conf in conf_array]
 
 # calculate p-value for each sample size (Null hypothesis: P = 0.5)
 p_value = np.array([2 * (1 - norm.cdf(np.abs(0.5 - x_bar) / SE)) for x_bar,SE in zip(x_bar,SE)])
@@ -93,13 +95,13 @@ fig_mean.update_layout(
 )
 
 fig_prob = go.Figure()
-fig_prob.add_trace(go.Scatter(
-    x=sample_size, 
-    y=prob_within_interval, 
-    mode='lines', 
-    name='Confidence level',
-    line=dict(color='green'),
-))
+for i,con in enumerate(conf_array):
+    fig_prob.add_trace(go.Scatter(
+        x=sample_size, 
+        y=prob_within_interval[i], 
+        mode='lines', 
+        name=f'CL = {con:.0%}',
+    ))
 fig_prob.update_layout(
     title = 'Poll Simulation, Confidence Level',
     xaxis_title = 'Sample Size',
@@ -160,7 +162,8 @@ st.plotly_chart(fig_mean)
 
 st.write(
     """
-    The second graph shows how confident the pollster is that the sample mean is within a given confidence level of the true percentage.
+    The second graph shows how confident the pollster is that the sample mean is within a given confidence level ($$CL$$) of the true percentage.
+    the graph is constructed for different confidence levels.
     This probability can be expressed as follows:
 
     $$P(\\left|\\bar{X} - P_{true}\\right| < 1-CL)$$

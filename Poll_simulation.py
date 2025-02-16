@@ -13,32 +13,46 @@ with st.sidebar:
     conf = st.number_input(r'Confidence Level, $CL$ (%)', value=95.0) / 100
     seed = st.number_input('Random Seed', value=0)
 
-# generate population
-np.random.seed(seed)
+# [10, 20, 30, ..., max_sample_size]
+samples_arr = np.arange(10, max_sample_size, 10, dtype=int)
 
-# generate sample
-sample_size = np.arange(10, max_sample_size, 10, dtype=int)
-# Initialize the list of lists
-sample = []
-# Generate the list of lists
-for i, size in enumerate(sample_size):
-    if i == 0:
-        # For the first element, generate a new list of random values
-        sample.append(np.random.choice([1, 0], size=size, p=[P, 1-P]).tolist())
-    else:
-        # Reuse the previous list and append additional random values
-        prev_list = sample[i - 1]
-        additional_values = np.random.choice([1, 0], size=size - len(prev_list), p=[P, 1-P]).tolist()
-        sample.append(prev_list + additional_values)
+def create_sample(P):
+    # generate population
+    np.random.seed(seed)
+    
+    # Initialize the list of lists
+    sample = []
+    # Generate the list of lists
+    for i, size in enumerate(samples_arr):
+        if i == 0:
+            # For the first element, generate a new list of random values
+            sample.append(np.random.choice([1, 0], size=size, p=[P, 1-P]).tolist())
+        else:
+            # Reuse the previous list and append additional random values
+            prev_list = sample[i - 1]
+            additional_values = np.random.choice([1, 0], size=size - len(prev_list), p=[P, 1-P]).tolist()
+            sample.append(prev_list + additional_values)
+    
+    return sample
 
 # standard error
-x_bar = np.array([np.mean(sample, axis=0) for sample in sample])
-SE = np.array([np.sqrt(x_bar * ( 1 - x_bar ) / sample_size) for x_bar, sample_size in zip(x_bar, sample_size)])
+def calculate_sample_statistics(max_sample_size, sample):
+    sample_size = np.arange(10, max_sample_size, 10, dtype=int)
 
-# confidence level
-conf_array = np.arange(conf - 0.02, conf + 0.02, 0.01)
-conf_array = conf_array[conf_array<1]
-prob_within_interval = [np.array([norm.cdf((1-conf) / SE) - norm.cdf(-(1-conf) / SE) for SE in SE]) for conf in conf_array]
+    # calculate sample mean and standard error
+    x_bar = np.array([np.mean(sample, axis=0) for sample in sample])
+    SE = np.array([np.sqrt(x_bar * ( 1 - x_bar ) / sample_size) for x_bar, sample_size in zip(x_bar, sample_size)])
+    
+    # confidence level
+    conf_array = np.arange(conf - 0.02, conf + 0.02, 0.01)
+    conf_array = conf_array[conf_array<1]
+    prob_within_interval = [np.array([norm.cdf((1-conf) / SE) - norm.cdf(-(1-conf) / SE) for SE in SE]) for conf in conf_array]
+    
+    return x_bar, SE, prob_within_interval, conf_array
+
+sample = create_sample(P)
+x_bar, SE, prob_within_interval, conf_array = calculate_sample_statistics(max_sample_size, sample) 
+
 
 # calculate p-value for each sample size (Null hypothesis: P = 0.5)
 p_value = np.array([2 * (1 - norm.cdf(np.abs(0.5 - x_bar) / SE)) for x_bar,SE in zip(x_bar,SE)])
@@ -46,7 +60,7 @@ p_value = np.array([2 * (1 - norm.cdf(np.abs(0.5 - x_bar) / SE)) for x_bar,SE in
 # make a subplot with secondary y axis
 fig_mean = go.Figure()
 fig_mean.add_trace(go.Scatter(
-    x=sample_size, 
+    x=samples_arr, 
     y=x_bar + 1.96*SE, 
     mode='lines', 
     name='Sample mean + SE', 
@@ -54,7 +68,7 @@ fig_mean.add_trace(go.Scatter(
     showlegend=False,
 ))
 fig_mean.add_trace(go.Scatter(
-    x=sample_size, 
+    x=samples_arr, 
     y=x_bar, 
     mode='lines', 
     name='Sample mean',
@@ -63,7 +77,7 @@ fig_mean.add_trace(go.Scatter(
     fillcolor='lightblue'
 ))
 fig_mean.add_trace(go.Scatter(
-    x=sample_size, 
+    x=samples_arr, 
     y=x_bar - 1.96*SE, 
     mode='lines', 
     name='Sample mean - SE', 
@@ -73,8 +87,8 @@ fig_mean.add_trace(go.Scatter(
     fillcolor='lightblue'
 ))
 fig_mean.add_trace(go.Scatter(
-    x=sample_size, 
-    y=[P]*len(sample_size), 
+    x=samples_arr, 
+    y=[P]*len(samples_arr), 
     mode='lines', 
     name='True Percentage',
     line=dict(color='red', dash = 'dash'),
@@ -95,9 +109,14 @@ fig_mean.update_layout(
 )
 
 fig_prob = go.Figure()
+conf_array = np.arange(conf - 0.02, conf + 0.02, 0.01)
+conf_array = conf_array[conf_array<1]
+
+prob_within_interval = [np.array([norm.cdf((1-conf) / SE) - norm.cdf(-(1-conf) / SE) for SE in SE]) for conf in conf_array]
+
 for i,con in enumerate(conf_array):
     fig_prob.add_trace(go.Scatter(
-        x=sample_size, 
+        x=samples_arr, 
         y=prob_within_interval[i], 
         mode='lines', 
         name=f'CL = {con:.0%}',
@@ -110,15 +129,15 @@ fig_prob.update_layout(
 
 fig_p_value = go.Figure()
 fig_p_value.add_trace(go.Scatter(
-    x=sample_size, 
+    x=samples_arr, 
     y=p_value, 
     mode='lines', 
     name='P-value',
     line=dict(color='purple'),
 ))
 fig_p_value.add_trace(go.Scatter(
-    x=sample_size, 
-    y=[0.05]*len(sample_size), 
+    x=samples_arr, 
+    y=[0.05]*len(samples_arr), 
     mode='lines', 
     name='Significance Level',
     line=dict(color='red', dash = 'dash'),

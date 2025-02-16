@@ -53,7 +53,6 @@ def calculate_sample_statistics(max_sample_size, sample):
 sample = create_sample(P)
 x_bar, SE, prob_within_interval, conf_array = calculate_sample_statistics(max_sample_size, sample) 
 
-
 # calculate p-value for each sample size (Null hypothesis: P = 0.5)
 p_value = np.array([2 * (1 - norm.cdf(np.abs(0.5 - x_bar) / SE)) for x_bar,SE in zip(x_bar,SE)])
 
@@ -215,4 +214,3 @@ st.write(
     Meaning to say, we can say that the true percentage is not 0.5 and one party is more popular than the other.
     """)
 st.plotly_chart(fig_p_value)
-

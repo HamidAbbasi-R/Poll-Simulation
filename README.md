@@ -80,7 +80,7 @@ The dashboard generates three interactive graphs:
 ![P-Value](imgs/p-value.png)
 
 ### 4. Biased Pollsters
-![Biased](imgs/bias.png)
+![Biased](imgs/Bias.png)
 
 ## Dependencies
 

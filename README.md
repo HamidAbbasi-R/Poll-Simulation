@@ -17,6 +17,7 @@ The dashboard generates three interactive graphs:
 1. **Sample Mean and Confidence Interval**: Visualizes the sample mean and its confidence interval as the sample size increases.
 2. **Confidence Level Probability**: Shows the probability that the sample mean falls within the specified confidence level of the true percentage.
 3. **P-Value Analysis**: Displays the p-value for testing the null hypothesis ($P_{true} = 0.5$) and indicates whether the null hypothesis can be rejected.
+4. **Biased Pollsters**: Demonstrates the effect of biased pollsters on the accuracy of aggregated poll results. Uses Monte Carlo simulation to generate biased poll results and a data-driven approach to aggregate the results.
 
 ## Key Features
 
@@ -77,6 +78,9 @@ The dashboard generates three interactive graphs:
 
 ### 3. P-Value Analysis
 ![P-Value](imgs/p-value.png)
+
+### 4. Biased Pollsters
+![Biased](imgs/bias.png)
 
 ## Dependencies
 
